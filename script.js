@@ -59,6 +59,62 @@
 
     // Contact form: open mail client with prefilled message
     // Remove contact form handling (form removed on GitHub Pages build)
+
+    // Stats count-up animation
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const formatWithCommas = (value) => value.toLocaleString();
+    const animateCount = (el, target, suffix) => {
+        const durationMs = 1400;
+        const start = performance.now();
+        const startValue = 0;
+        const step = (now) => {
+            const t = Math.min(1, (now - start) / durationMs);
+            // easeOutCubic
+            const eased = 1 - Math.pow(1 - t, 3);
+            const current = Math.round(startValue + (target - startValue) * eased);
+            el.textContent = `${formatWithCommas(current)}${suffix}`;
+            if (t < 1) {
+                requestAnimationFrame(step);
+            }
+        };
+        requestAnimationFrame(step);
+    };
+
+    const initStatsCounter = () => {
+        const numEls = document.querySelectorAll('.stats .num');
+        if (!numEls.length) return;
+        numEls.forEach((el) => {
+            if (el.dataset.animated === 'true') return;
+            const original = (el.textContent || '').trim();
+            const hasPlus = /\+$/.test(original);
+            const suffix = hasPlus ? '+' : '';
+            const numeric = original.replace(/[^0-9]/g, '');
+            const target = Number(numeric || '0');
+            if (!Number.isFinite(target) || target <= 0) return;
+            el.dataset.animated = 'true';
+            if (prefersReducedMotion) {
+                el.textContent = `${formatWithCommas(target)}${suffix}`;
+            } else {
+                animateCount(el, target, suffix);
+            }
+        });
+    };
+
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    initStatsCounter();
+                    obs.disconnect();
+                }
+            });
+        }, { threshold: 0.25 });
+        const target = document.querySelector('.hero .stats') || document.querySelector('.stats');
+        target && observer.observe(target);
+    } else {
+        // Fallback
+        window.addEventListener('load', initStatsCounter, { once: true });
+    }
 })();
 
 

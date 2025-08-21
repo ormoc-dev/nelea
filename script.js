@@ -58,24 +58,7 @@
     }
 
     // Contact form: open mail client with prefilled message
-    if (contactForm) {
-        contactForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = /** @type {HTMLInputElement} */ (document.getElementById('name')).value.trim();
-            const email = /** @type {HTMLInputElement} */ (document.getElementById('email')).value.trim();
-            const message = /** @type {HTMLTextAreaElement} */ (document.getElementById('message')).value.trim();
-
-            if (!name || !email || !message) {
-                alert('Please complete all fields.');
-                return;
-            }
-
-            const subject = encodeURIComponent('Inquiry for Nelea Bea Q. Pedra');
-            const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
-            const to = 'pedraneleabea@gmail.com';
-            window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
-        });
-    }
+    // Remove contact form handling (form removed on GitHub Pages build)
 })();
 
 
